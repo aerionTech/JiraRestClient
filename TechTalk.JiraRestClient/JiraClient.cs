@@ -340,7 +340,6 @@ namespace TechTalk.JiraRestClient
             }
         }
 
-
         public IEnumerable<Comment> GetComments(IssueRef issue)
         {
             try

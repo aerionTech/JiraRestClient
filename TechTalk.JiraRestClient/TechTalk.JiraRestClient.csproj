@@ -41,10 +41,14 @@
       <Link>QueryableIssueCollection.cs</Link>
     </Compile>
     <Compile Include="Attachment.cs" />
+    <Compile Include="Clients\JiraAgileClient.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="CommentsContainer.cs" />
     <Compile Include="Compatibility.cs" />
+    <Compile Include="Interfaces\IJiraAgileClient.cs" />
     <Compile Include="IssueType.cs" />
+    <Compile Include="Models\Board.cs" />
+    <Compile Include="Models\BoardContainer.cs" />
     <Compile Include="Worklog.cs" />
     <Compile Include="WorklogContainer.cs" />
     <Compile Include="ServerInfo.cs" />
