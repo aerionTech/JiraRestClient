@@ -47,7 +47,9 @@
     <Compile Include="Compatibility.cs" />
     <Compile Include="Interfaces\IJiraAgileClient.cs" />
     <Compile Include="IssueType.cs" />
+    <Compile Include="Models\Sprint.cs" />
     <Compile Include="Models\Board.cs" />
+    <Compile Include="Models\SprintContainer.cs" />
     <Compile Include="Models\BoardContainer.cs" />
     <Compile Include="Worklog.cs" />
     <Compile Include="WorklogContainer.cs" />

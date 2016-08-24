@@ -97,13 +97,18 @@ namespace TechTalk.JiraRestClient.Clients
         /// <summary>
         /// Gets all boards from the API.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="startIndex">The starting index of the returned boards. Base index: 0.</param>
+        /// <param name="maxResults">The maximum number of boards to return per page. Default: 50.</param>
+        /// <returns>
+        /// Returns a list of boards
+        /// </returns>
         /// <exception cref="JiraClientException">Could not load boards</exception>
-        public IEnumerable<Board> GetBoards()
+        public IEnumerable<Board> GetBoards(int startIndex = 0, int maxResults = 50)
         {
             try
             {
-                var path = "board";
+                var path = String.Format("board?startAt={0}&maxResults={1}", startIndex, maxResults);
+
                 var request = CreateRequest(Method.GET, path);
 
                 var response = ExecuteRequest(request);
@@ -117,6 +122,74 @@ namespace TechTalk.JiraRestClient.Clients
                 Trace.TraceError("GetBoards() error: {0}", ex);
                 throw new JiraClientException("Could not load boards", ex);
             }
+        }
+
+        /// <summary>
+        /// Gets sprints within a board.
+        /// </summary>
+        /// <param name="boardId">The board identifier.</param>
+        /// <param name="startIndex">The starting index of the returned boards. Base index: 0.</param>
+        /// <param name="maxResults">The maximum number of boards to return per page. Default: 50.</param>
+        /// <returns>
+        /// Returns a list of Sprints for a given board
+        /// </returns>
+        /// <exception cref="JiraClientException">Could not load sprints</exception>
+        public IEnumerable<Sprint> GetSprintsWithinBoard(string boardId, int startIndex = 0, int maxResults = 50)
+        {
+            try
+            {
+                var path = String.Format("board/{0}/sprint?startAt={1}&maxResults={2}", boardId, startIndex, maxResults);
+                var request = CreateRequest(Method.GET, path);
+
+                var response = ExecuteRequest(request);
+                AssertStatus(response, HttpStatusCode.OK);
+
+                var data = deserializer.Deserialize<SprintContainer>(response);
+                return data.sprints ?? Enumerable.Empty<Sprint>();
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("GetSprintsWithinBoard(boardId:{0}) error: {1}", boardId, ex);
+                throw new JiraClientException("Could not load sprints", ex);
+            }
+            
+        }
+
+        /// <summary>
+        /// Gets sprints within a board.
+        /// </summary>
+        /// <typeparam name="TIssueFields">The type of the issue fields.</typeparam>
+        /// <param name="sprintId">The sprint identifier.</param>
+        /// <param name="jqlQuery">The JQL query.</param>
+        /// <param name="fields">The fields.</param>
+        /// <param name="startIndex">The starting index of the returned boards. Base index: 0.</param>
+        /// <param name="maxResults">The maximum number of boards to return per page. Default: 50.</param>
+        /// <returns>
+        /// Returns a list of Sprints for a given board
+        /// </returns>
+        /// <exception cref="JiraClientException">Could not load sprints</exception>
+        public IEnumerable<Issue<TIssueFields>> GetIssuesWithinSprint<TIssueFields>(string sprintId, string jqlQuery, string[] fields, int startIndex = 0, int maxResults = 50) where TIssueFields : IssueFields, new()
+        {
+            try
+            {
+                var path = String.Format("sprint/{0}/issue?startAt={1}&maxResults={2}", sprintId, startIndex, maxResults);
+                if (!string.IsNullOrEmpty(jqlQuery) ) path += String.Format("&jql={0}", jqlQuery);
+                if (fields != null && fields.Any()) path += String.Format("&fields={0}", String.Join(",", fields));
+
+                var request = CreateRequest(Method.GET, path);
+
+                var response = ExecuteRequest(request);
+                AssertStatus(response, HttpStatusCode.OK);
+
+                var data = deserializer.Deserialize<IssueContainer<TIssueFields>>(response);                
+                return data.issues ?? Enumerable.Empty<Issue<TIssueFields>>();
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("GetIssuesWithinSprint(sprintId:{0}) error: {1}", sprintId, ex);
+                throw new JiraClientException("Could not load sprints", ex);
+            }
+
         }
     }
 }
