@@ -85,5 +85,19 @@ namespace TechTalk.JiraRestClient
 
         /// <summary>Returns information about the JIRA server</summary>
         ServerInfo GetServerInfo();
+
+        /// <summary>
+        /// Gets the work log by Issue
+        /// </summary>
+        /// <param name="issue">The issue.</param>
+        /// <returns>Returns list of work logs</returns>
+        IEnumerable<Worklog> GetWorklogs(IssueRef issue);
+
+        /// <summary>
+        /// Gets the work log by issue key
+        /// </summary>
+        /// <param name="issueKey">The issue key.</param>
+        /// <returns>Returns list of work logs</returns>
+        IEnumerable<Worklog> GetWorklogs(string issueKey);
     }
 }

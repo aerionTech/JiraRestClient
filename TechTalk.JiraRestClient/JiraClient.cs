@@ -655,5 +655,31 @@ namespace TechTalk.JiraRestClient
                 throw new JiraClientException("Could not retrieve server information", ex);
             }
         }
+
+        public IEnumerable<Worklog> GetWorklogs(IssueRef issue)
+        {
+            return this.GetWorklogs(issue.key);
+        }
+
+        public IEnumerable<Worklog> GetWorklogs(string issueKey)
+        {
+            try
+            {
+                var path = string.Format("issue/{0}/worklog", issueKey);
+                var request = CreateRequest(Method.GET, path);
+                request.AddHeader("ContentType", "application/json");
+
+                var response = ExecuteRequest(request);
+                AssertStatus(response, HttpStatusCode.OK);
+
+                var data = deserializer.Deserialize<WorklogContainer>(response);
+                return data.worklogs ?? Enumerable.Empty<Worklog>();
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError("GetWorklogs(issue) error: {0}", ex);
+                throw new JiraClientException("Could not load worklogs for issue", ex);
+            }
+        }
     }
 }
